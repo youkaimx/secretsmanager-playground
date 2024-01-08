@@ -85,9 +85,9 @@ data "aws_iam_policy_document" "kms_policy" {
       "kms:DescribeKey"
     ]
     resources = ["*"]
+
     # Only use for requests done via secretsmanager
     # Reference https://docs.aws.amazon.com/kms/latest/developerguide/conditions-kms.html#conditions-kms-via-service
-
     condition {
       test     = "StringEquals"
       variable = "kms:ViaService"
