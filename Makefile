@@ -5,19 +5,19 @@ KEY=$(shell basename $$PWD)/terraform.tfstate
 init:
 	terraform init -backend-config="bucket=$(BUCKET)" -backend-config="key=$(KEY)" -backend-config="region=$(REGION)"
 #	terraform init -backend-config=config.s3.tfbackend
-fmt:
+f:
 	terraform fmt
-plan:
+p:
 	terraform plan
 
-validate:
+v:
 	terraform validate
 
-apply:
-	terraform apply -auto-aprove
+a:
+	terraform apply -auto-approve
 
-destroy:
-	terraform apply -destroy -auto-aprove
+d:
+	terraform apply -destroy -auto-approve
 
 precommit:
 	pre-commit run -a

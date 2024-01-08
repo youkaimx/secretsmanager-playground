@@ -17,3 +17,4 @@ repos:
         - --args=--directory=.
         - --args=--framework=terraform
         - --args=--soft-fail
+    - id: terraform_docs
