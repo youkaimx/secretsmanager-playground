@@ -1,3 +1,0 @@
-bucket = "youkaimx-tf"
-region = "us-east-2"
-key    = "aws-terraform-starter/terraform.tfstate"
