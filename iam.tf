@@ -24,6 +24,8 @@ data "aws_iam_policy_document" "trust_this" {
 }
 
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 
 # IAM policy document
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document
@@ -44,6 +46,7 @@ data "aws_iam_policy_document" "kms_policy" {
   }
 
   statement {
+    sid    = "Key Administrators"
     effect = "Allow"
     principals {
       type        = "AWS"
@@ -82,6 +85,22 @@ data "aws_iam_policy_document" "kms_policy" {
       "kms:DescribeKey"
     ]
     resources = ["*"]
+    # Only use for requests done via secretsmanager
+    # Reference https://docs.aws.amazon.com/kms/latest/developerguide/conditions-kms.html#conditions-kms-via-service
+
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values   = ["secretsmanager.${data.aws_region.current.name}.amazonaws.com"]
+    }
+    # Only use for secrets with a name prefix like ${var.project_short_name}
+    # Reference https://docs.aws.amazon.com/kms/latest/developerguide/conditions-kms.html#conditions-kms-encryption-context
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:SecretARN"
+      values   = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:${var.project_short_name}/*"]
+
+    }
   }
 
   statement {
@@ -120,7 +139,7 @@ data "aws_iam_policy_document" "secretsmanager_operator" {
       "secretsmanager:PutSecretValue",
       "secretsmanager:GetSecretValue",
     ]
-    resources = ["*"]
+    resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:${var.project_short_name}/*"]
   }
 }
 
